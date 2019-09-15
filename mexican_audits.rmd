@@ -16,7 +16,8 @@ library(magrittr)
 
 ```{r data}
 
-data <- read.csv("Mexico_audits_aug8_2019.csv", encoding = "UTF-8")
+data <- readRDS("mexican_audits.rds")
+
 ```
 
 First extract the amount of pesos lost in each audit, and remove the values of that are NA. Second, add up the amount lost in each audit. Lastly, mutate this into a separate column to be used for data analysis.
@@ -32,10 +33,13 @@ df_con_extraccion <- data %>% dplyr::mutate(
   tidyr::unnest() %>%
   dplyr::mutate(
     loss =
-      stringr::str_replace(loss, ",","") %>%
-      as.numeric)
-  
+      stringr::str_replace(loss, ",","") 
+      )
+
+df_con_extraccion$loss <- as.numeric(gsub(",", "", df_con_extraccion$loss, fixed = TRUE))
 df_con_extraccion$loss[is.na(df_con_extraccion$loss)] <- 0
+
+
 
 loss_per_audit <- df_con_extraccion %>% 
   group_by(clave_accion) %>%
@@ -44,26 +48,7 @@ loss_per_audit <- df_con_extraccion %>%
 data_with_loss <- left_join(data, loss_per_audit, by = "clave_accion")
 
 
-saveRDS(data,"mexican_aduits.rds")
-
-get_pesos <- function(texto){
-  texto_split <-
-    texto %>%
-    stringr::str_split(' ') %>%
-    unlist()
- 
-  pesos_position <-
-    which(texto_split %>%
-            str_detect('pesos'))
- 
-  pesos_amount_position <-
-    pesos_position - 1
- 
-  texto_split[pesos_amount_position] %>%
-    stringr::str_remove_all(',') %>%
-    as.numeric()
-
-}
+saveRDS(data_with_loss,"mexican_audits_with_loss.rds")
 
 
 

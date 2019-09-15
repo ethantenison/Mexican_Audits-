@@ -1,0 +1,50 @@
+---
+title: "Mexican Audits"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+install.packages("tidyverse")
+library(tidyverse)
+library(stringr)
+library(janitor)
+```
+
+
+```{r data}
+
+data <- read.csv("Mexico_audits_aug8_2019.csv", encoding = "UTF-8")
+saveRDS(data,"mexican_aduits.rds")
+```
+
+First extract the amount of pesos lost in each audit, and remove the values of that are NA. Second, add up the amount lost in each audit. Lastly, mutate this into a separate column to be used for data analysis.
+
+
+```{r data cleaning}
+data <- clean_names(data)
+
+
+get_pesos <- function(texto){
+  texto_split <-
+    texto %>%
+    stringr::str_split(' ') %>%
+    unlist()
+ 
+  pesos_position <-
+    which(texto_split %>%
+            str_detect('pesos'))
+ 
+  pesos_amount_position <-
+    pesos_position - 1
+ 
+  texto_split[pesos_amount_position] %>%
+    stringr::str_remove_all(',') %>%
+    as.numeric()
+
+}
+
+
+
+```

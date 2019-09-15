@@ -10,13 +10,13 @@ install.packages("tidyverse")
 library(tidyverse)
 library(stringr)
 library(janitor)
+library(magrittr)
 ```
 
 
 ```{r data}
 
 data <- read.csv("Mexico_audits_aug8_2019.csv", encoding = "UTF-8")
-saveRDS(data,"mexican_aduits.rds")
 ```
 
 First extract the amount of pesos lost in each audit, and remove the values of that are NA. Second, add up the amount lost in each audit. Lastly, mutate this into a separate column to be used for data analysis.
@@ -24,7 +24,27 @@ First extract the amount of pesos lost in each audit, and remove the values of t
 
 ```{r data cleaning}
 data <- clean_names(data)
+options("scipen"=100, "digits"=4)
 
+df_con_extraccion <- data %>% dplyr::mutate(
+  loss = stringr::str_extract_all(data$texto_accion, "[0-9,.]+(?= pesos)")
+  ) %>%
+  tidyr::unnest() %>%
+  dplyr::mutate(
+    loss =
+      stringr::str_replace(loss, ",","") %>%
+      as.numeric)
+  
+df_con_extraccion$loss[is.na(df_con_extraccion$loss)] <- 0
+
+loss_per_audit <- df_con_extraccion %>% 
+  group_by(clave_accion) %>%
+  summarize(total_loss = sum(loss))
+
+data_with_loss <- left_join(data, loss_per_audit, by = "clave_accion")
+
+
+saveRDS(data,"mexican_aduits.rds")
 
 get_pesos <- function(texto){
   texto_split <-

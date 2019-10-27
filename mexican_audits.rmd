@@ -42,12 +42,18 @@ df_con_extraccion$loss[is.na(df_con_extraccion$loss)] <- 0
 df_con_extraccion$clave_accion <- as.character(df_con_extraccion$clave_accion)
 df_con_extraccion <- df_con_extraccion %>% group_by(clave_accion) %>% mutate(id = 1:n())
 
-df_wide <- reshape(df_con_extraccion, idvar = "clave_accion", timevar = "id", direction = "wide")
+df_wide <- dcast(df_con_extraccion, clave_accion ~ id, value.var = "loss")
+df_wide[is.na(df_wide)] <- 0
+df_wide <- rename(df_wide, one = 2)
+df_wide$check <- rowSums( df_wide[,3:27] )
+for (i in 1:length(df_wide$one)){
+           if(df_wide$one[i] == df_wide$check[i]){        
+                    df_wide$one[i] <- 0              
+           }
+}
+df_wide$total_loss <- rowSums( df_wide[,2:27])
+loss_per_audit <- select(df_wide, clave_accion, total_loss)
 
-
-loss_per_audit <- df_con_extraccion %>% 
-  group_by(clave_accion) %>%
-  summarize(total_loss = sum(loss))
 
 data_with_loss <- left_join(data, loss_per_audit, by = "clave_accion")
 

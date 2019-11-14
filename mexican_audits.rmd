@@ -91,7 +91,7 @@ df_mxstate <- mutate(df_mxstate, loss_per_person = loss_by_state/pop)
 
 df_mxstate$value <- df_mxstate$loss_per_person
 
-mxstate_choropleth(df_mxstate,
+mxstate_choropleth(df_mxstate,num_colors = 8,
                    title = "Loss of funds person in 2018, by state") 
 
 ```
@@ -104,6 +104,10 @@ df_mxstate2 <- left_join(df_mxstate,bystate2018, by = c("state_name_official"="e
 
 df_mxstate2$value <- df_mxstate2$loss_by_state
 
-mxstate_choropleth(df_mxstate2,
+mxstate_choropleth(df_mxstate2,num_colors =8,
                    title = "Total loss of funds, by state")
+```
+
+```{r, municipalities}
+
 ```

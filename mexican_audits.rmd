@@ -73,6 +73,37 @@ data <- filter(data, !entidad_federativa %in% c("", "-"))
 
 bystate <- data %>% group_by(entidad_federativa,x_u_feff_ano_cuenta_publica) %>%  summarize(loss_by_state = sum(total_loss))
 
+bystate2018 <- filter(bystate, x_u_feff_ano_cuenta_publica == "2018")
+bystate2018$entidad_federativa <- as.character(bystate2018$entidad_federativa)
+bystate2018$entidad_federativa <- gsub("Ciudad de México", "Distrito Federal",bystate2018$entidad_federativa , fixed = TRUE)
+
+if (!require("devtools")) {
+    install.packages("devtools")
+}
+devtools::install_github("diegovalle/mxmaps")
+
+data(df_mxstate)
+df_mxstate$value <- df_mxstate$pop
+
+df_mxstate <- left_join(df_mxstate,bystate2018, by = c("state_name_official"="entidad_federativa"))
+
+df_mxstate <- mutate(df_mxstate, loss_per_person = loss_by_state/pop)
+
+df_mxstate$value <- df_mxstate$loss_per_person
+
+mxstate_choropleth(df_mxstate,
+                   title = "Loss of funds person in 2018, by state") 
+
+```
+
+```{r}
+data(df_mxstate)
 
 
+df_mxstate2 <- left_join(df_mxstate,bystate2018, by = c("state_name_official"="entidad_federativa"))
+
+df_mxstate2$value <- df_mxstate2$loss_by_state
+
+mxstate_choropleth(df_mxstate2,
+                   title = "Total loss of funds, by state")
 ```

@@ -63,3 +63,16 @@ saveRDS(data_with_loss,"mexican_audits_with_loss.rds")
 
 
 ```
+
+```{r, mapping}
+ data <- readRDS("mexican_audits_with_loss.rds")
+options(scipen=999)
+
+data$total_loss[is.na(data$total_loss)] <- 0
+data <- filter(data, !entidad_federativa %in% c("", "-"))
+
+bystate <- data %>% group_by(entidad_federativa,x_u_feff_ano_cuenta_publica) %>%  summarize(loss_by_state = sum(total_loss))
+
+
+
+```

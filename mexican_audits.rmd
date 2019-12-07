@@ -42,20 +42,105 @@ df_con_extraccion$loss[is.na(df_con_extraccion$loss)] <- 0
 df_con_extraccion$clave_accion <- as.character(df_con_extraccion$clave_accion)
 df_con_extraccion <- df_con_extraccion %>% group_by(clave_accion) %>% mutate(id = 1:n())
 
-df_wide <- dcast(df_con_extraccion, clave_accion ~ id, value.var = "loss")
-df_wide[is.na(df_wide)] <- 0
-df_wide <- rename(df_wide, one = 2)
-df_wide$check <- rowSums( df_wide[,3:27] )
-for (i in 1:length(df_wide$one)){
-           if(df_wide$one[i] == df_wide$check[i]){        
-                    df_wide$one[i] <- 0              
-           }
-}
+
+
+#Here we are checking to see if any one value is equal to half the sum of the other values. 
+#We're doing this to make sure that there are no duplicate values 
+        df_wide <- dcast(df_con_extraccion, clave_accion ~ id, value.var = "loss")
+        df_wide[is.na(df_wide)] <- 0
+        df_Wide <- clean_names(df_wide)
+        df_wide$check <- rowSums( df_wide[,2:27] )
+        
+                for (i in 1:length(df_wide$x1)){
+                           if(df_wide$x1[i] == df_wide$check[i]/2){        
+                                    df_wide$x1[i] <- 0 
+                                    
+                           } else if (df_wide$x2[i] == df_wide$check[i]/2){        
+                                    df_wide$x2[i] <- 0  
+                                    
+                           }else if (df_wide$x3[i] == df_wide$check[i]/2){        
+                                    df_wide$x3[i] <- 0   
+                                    
+                           }else if (df_wide$x4[i] == df_wide$check[i]/2){        
+                                    df_wide$x4[i] <- 0  
+                                    
+                           }else if (df_wide$x5[i] == df_wide$check[i]/2){        
+                                    df_wide$x5[i] <- 0  
+                                    
+                           }else if (df_wide$x6[i] == df_wide$check[i]/2){        
+                                    df_wide$x6[i] <- 0  
+                                    
+                           }else if (df_wide$x7[i] == df_wide$check[i]/2){        
+                                    df_wide$x7[i] <- 0  
+                                    
+                           }else if (df_wide$x8[i] == df_wide$check[i]/2){        
+                                    df_wide$x8[i] <- 0  
+                                    
+                           }else if (df_wide$x9[i] == df_wide$check[i]/2){        
+                                    df_wide$x9[i] <- 0  
+                                    
+                           }else if (df_wide$x10[i] == df_wide$check[i]/2){        
+                                    df_wide$x10[i] <- 0  
+                                    
+                           }else if (df_wide$x11[i] == df_wide$check[i]/2){        
+                                    df_wide$x11[i] <- 0  
+                                    
+                           }else if (df_wide$x12[i] == df_wide$check[i]/2){        
+                                    df_wide$x12[i] <- 0   
+                                    
+                           }else if (df_wide$x13[i] == df_wide$check[i]/2){        
+                                    df_wide$x13[i] <- 0     
+                                    
+                           }else if (df_wide$x14[i] == df_wide$check[i]/2){        
+                                    df_wide$x14[i] <- 0   
+                                    
+                           }else if (df_wide$x15[i] == df_wide$check[i]/2){        
+                                    df_wide$x15[i] <- 0      
+                                    
+                           }else if (df_wide$x16[i] == df_wide$check[i]/2){        
+                                    df_wide$x16[i] <- 0     
+                                    
+                           }else if (df_wide$x17[i] == df_wide$check[i]/2){        
+                                    df_wide$x17[i] <- 0    
+                                    
+                           }else if (df_wide$x18[i] == df_wide$check[i]/2){        
+                                    df_wide$x18[i] <- 0     
+                                    
+                           }else if (df_wide$x19[i] == df_wide$check[i]/2){        
+                                    df_wide$x19[i] <- 0     
+                                    
+                           }else if (df_wide$x20[i] == df_wide$check[i]/2){        
+                                    df_wide$x20[i] <- 0      
+                                    
+                           }else if (df_wide$x21[i] == df_wide$check[i]/2){        
+                                    df_wide$x21[i] <- 0      
+                                    
+                           }else if (df_wide$x22[i] == df_wide$check[i]/2){        
+                                    df_wide$x22[i] <- 0    
+                                    
+                           }else if (df_wide$x23[i] == df_wide$check[i]/2){        
+                                    df_wide$x23[i] <- 0     
+                                    
+                           }else if (df_wide$x24[i] == df_wide$check[i]/2){        
+                                    df_wide$x24[i] <- 0     
+                                    
+                           }else if (df_wide$x25[i] == df_wide$check[i]/2){        
+                                    df_wide$x25[i] <- 0      
+                                    
+                           }else if (df_wide$x26[i] == df_wide$check[i]/2){        
+                                    df_wide$x26[i] <- 0    
+                                    
+                           }
+                }
+
+
+
 df_wide$total_loss <- rowSums( df_wide[,2:27])
 loss_per_audit <- select(df_wide, clave_accion, total_loss)
 
 
 data_with_loss <- left_join(data, loss_per_audit, by = "clave_accion")
+data_with_loss$total_loss[is.na(data_with_loss$total_loss)] <- 0
 
 
 saveRDS(data_with_loss,"mexican_audits_with_loss.rds")

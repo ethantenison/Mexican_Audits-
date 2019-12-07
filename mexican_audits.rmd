@@ -48,8 +48,8 @@ df_con_extraccion <- df_con_extraccion %>% group_by(clave_accion) %>% mutate(id 
 #We're doing this to make sure that there are no duplicate values 
         df_wide <- dcast(df_con_extraccion, clave_accion ~ id, value.var = "loss")
         df_wide[is.na(df_wide)] <- 0
-        df_Wide <- clean_names(df_wide)
-        df_wide$check <- rowSums( df_wide[,2:27] )
+        df_wide <-clean_names(df_wide)
+        df_wide$check <- rowSums(df_wide[,2:27])
         
                 for (i in 1:length(df_wide$x1)){
                            if(df_wide$x1[i] == df_wide$check[i]/2){        
